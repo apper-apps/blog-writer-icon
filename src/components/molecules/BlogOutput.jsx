@@ -5,7 +5,7 @@ import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 const BlogOutput = ({ blogData, onCopy, onDownload, onShare, onRegenerateImages }) => {
   const [regeneratingImages, setRegeneratingImages] = useState(false);
-  
+  const [previewMode, setPreviewMode] = useState('desktop');
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(blogData.content);
@@ -97,6 +97,32 @@ const handleDownload = () => {
             </p>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Preview Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setPreviewMode('desktop')}
+                className={`px-3 py-1 text-sm rounded-md transition-all duration-200 ${
+                  previewMode === 'desktop' 
+                    ? 'bg-white text-purple-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <ApperIcon name="Monitor" size={16} className="mr-1" />
+                Desktop
+              </button>
+              <button
+                onClick={() => setPreviewMode('mobile')}
+                className={`px-3 py-1 text-sm rounded-md transition-all duration-200 ${
+                  previewMode === 'mobile' 
+                    ? 'bg-white text-purple-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <ApperIcon name="Smartphone" size={16} className="mr-1" />
+                Mobile
+              </button>
+            </div>
+            
             {blogData.images && blogData.images.length > 0 && onRegenerateImages && (
               <Button
                 variant="outline"
@@ -128,11 +154,17 @@ const handleDownload = () => {
         </div>
       </div>
       
-      <div className="p-6 max-h-96 overflow-y-auto">
-        <div 
-          className="prose prose-purple max-w-none"
-          dangerouslySetInnerHTML={{ __html: blogData.content }}
-        />
+<div className="p-6 max-h-96 overflow-y-auto">
+        <div className={`${previewMode === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-none'}`}>
+          <div 
+            className={`prose prose-purple transition-all duration-200 ${
+              previewMode === 'mobile' 
+                ? 'prose-sm max-w-none text-sm' 
+                : 'max-w-none'
+            }`}
+            dangerouslySetInnerHTML={{ __html: blogData.content }}
+          />
+        </div>
       </div>
       
       <div className="p-6 border-t border-gray-100 bg-gray-50">
