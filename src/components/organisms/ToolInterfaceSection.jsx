@@ -10,10 +10,12 @@ const ToolInterfaceSection = ({ setIsLoading }) => {
   const [formData, setFormData] = useState({
     topic: '',
     category: '',
-    wordCount: 500
+    wordCount: 500,
+    generateImages: true
   });
   const [generatedBlog, setGeneratedBlog] = useState(null);
   const [errors, setErrors] = useState({});
+  const [imageGenerationStatus, setImageGenerationStatus] = useState('');
 
   const categories = [
     'Tech', 'Health', 'Travel', 'Business', 'Lifestyle', 'Food', 'Fashion', 'Sports'
@@ -52,29 +54,41 @@ const ToolInterfaceSection = ({ setIsLoading }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleGenerate = async () => {
+const handleGenerate = async () => {
     if (!validateForm()) return;
     
     setIsLoading(true);
+    setImageGenerationStatus('');
     
     try {
-      const blogData = await generateBlogPost(formData);
+      if (formData.generateImages) {
+        setImageGenerationStatus('Generating AI images...');
+      }
+      
+      const blogData = await generateBlogPost(formData, (status) => {
+        setImageGenerationStatus(status);
+      });
+      
       setGeneratedBlog(blogData);
+      setImageGenerationStatus('');
     } catch (error) {
       console.error('Error generating blog:', error);
+      setImageGenerationStatus('');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleNewBlog = () => {
+const handleNewBlog = () => {
     setGeneratedBlog(null);
     setFormData({
       topic: '',
       category: '',
-      wordCount: 500
+      wordCount: 500,
+      generateImages: true
     });
     setErrors({});
+    setImageGenerationStatus('');
   };
 
   return (
@@ -160,17 +174,43 @@ const ToolInterfaceSection = ({ setIsLoading }) => {
                   {errors.wordCount && (
                     <p className="text-sm text-red-600">{errors.wordCount}</p>
                   )}
+</div>
+                
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.generateImages}
+                      onChange={(e) => handleInputChange('generateImages', e.target.checked)}
+                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Generate AI Images
+                    </span>
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Automatically generate relevant images for your blog post using AI
+                  </p>
                 </div>
                 
-                <Button
-                  size="lg"
-                  icon="Sparkles"
-                  onClick={handleGenerate}
-                  className="w-full"
-                  disabled={!formData.topic || !formData.category}
-                >
-                  Generate Blog Post
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    size="lg"
+                    icon="Sparkles"
+                    onClick={handleGenerate}
+                    className="w-full"
+                    disabled={!formData.topic || !formData.category}
+                  >
+                    Generate Blog Post
+                  </Button>
+                  
+                  {imageGenerationStatus && (
+                    <div className="flex items-center justify-center space-x-2 text-sm text-purple-600">
+                      <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>{imageGenerationStatus}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

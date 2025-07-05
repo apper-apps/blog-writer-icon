@@ -2,7 +2,66 @@ import mockBlogs from '@/services/mockData/blogs.json';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const generateBlogContent = (topic, category, wordCount) => {
+// Simulated image generation service
+const generateImage = async (prompt) => {
+  // Simulate API call delay
+  await delay(1000 + Math.random() * 2000);
+  
+  // In a real implementation, this would call DALL-E API
+  // For now, we'll return a placeholder URL that represents generated images
+  const imageId = Math.random().toString(36).substr(2, 9);
+  return `https://api.openai.com/v1/images/generations/${imageId}?prompt=${encodeURIComponent(prompt)}`;
+};
+
+const generateImagesForBlog = async (topic, category, onProgress) => {
+  const imagePrompts = [
+    `Professional hero image for blog about ${topic}, ${category} style, high quality, modern`,
+    `Illustration showing ${topic} concept, ${category} theme, clean design, informative`,
+    `Visual representation of ${topic} implementation, ${category} context, professional layout`
+  ];
+  
+  const images = [];
+  
+  for (let i = 0; i < imagePrompts.length; i++) {
+    if (onProgress) {
+      onProgress(`Generating image ${i + 1} of ${imagePrompts.length}...`);
+    }
+    
+    try {
+      const imageUrl = await generateImage(imagePrompts[i]);
+      images.push({
+        url: imageUrl,
+        prompt: imagePrompts[i],
+        alt: `AI generated image for ${topic} - ${category}`,
+        position: i === 0 ? 'hero' : i === 1 ? 'section' : 'conclusion'
+      });
+    } catch (error) {
+      console.error(`Failed to generate image ${i + 1}:`, error);
+      // Add placeholder for failed image generation
+      images.push({
+        url: null,
+        prompt: imagePrompts[i],
+        alt: `Image placeholder for ${topic} - ${category}`,
+        position: i === 0 ? 'hero' : i === 1 ? 'section' : 'conclusion',
+        error: true
+      });
+    }
+  }
+  
+  return images;
+};
+
+const generateBlogContent = (topic, category, wordCount, generatedImages = []) => {
+  const getImageHtml = (position) => {
+    const image = generatedImages.find(img => img.position === position);
+    if (image && image.url && !image.error) {
+      return `<img src="${image.url}" alt="${image.alt}" class="generated-image" />`;
+    }
+    return `<div class="image-placeholder">
+      <p>🖼️ ${position === 'hero' ? 'Hero' : position === 'section' ? 'Section' : 'Conclusion'} Image: ${topic} - AI Generated</p>
+    </div>`;
+  };
+  
   const sampleContent = {
     Tech: {
       sections: [
@@ -14,16 +73,12 @@ const generateBlogContent = (topic, category, wordCount) => {
       ],
       content: `
         <h1>${topic}</h1>
-        <div class="image-placeholder">
-          <p>🖼️ Hero Image: ${topic} - AI Generated</p>
-        </div>
+        ${getImageHtml('hero')}
         
         <h2>Introduction</h2>
         <p>In today's rapidly evolving technological landscape, ${topic.toLowerCase()} has become increasingly important for businesses and individuals alike. This comprehensive guide will explore the various aspects of ${topic.toLowerCase()} and how it can benefit your organization.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Technology Overview - AI Generated</p>
-        </div>
+        ${getImageHtml('section')}
         
         <h2>Current Market Trends</h2>
         <p>The market for ${topic.toLowerCase()} is experiencing unprecedented growth. Recent studies show that organizations implementing ${topic.toLowerCase()} strategies are seeing significant improvements in efficiency and productivity. Key trends include automation, artificial intelligence integration, and enhanced user experiences.</p>
@@ -38,9 +93,7 @@ const generateBlogContent = (topic, category, wordCount) => {
           <li>Continuous monitoring and optimization</li>
         </ul>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Implementation Process - AI Generated</p>
-        </div>
+        ${getImageHtml('conclusion')}
         
         <h2>Future Implications</h2>
         <p>Looking ahead, ${topic.toLowerCase()} will continue to shape the future of technology. Emerging trends such as quantum computing, edge computing, and sustainable technology solutions will further enhance the capabilities and applications of ${topic.toLowerCase()}.</p>
@@ -59,16 +112,12 @@ const generateBlogContent = (topic, category, wordCount) => {
       ],
       content: `
         <h1>${topic}</h1>
-        <div class="image-placeholder">
-          <p>🖼️ Hero Image: ${topic} - AI Generated</p>
-        </div>
+        ${getImageHtml('hero')}
         
         <h2>Introduction</h2>
         <p>Understanding ${topic.toLowerCase()} is crucial for maintaining optimal health and wellness. This comprehensive guide explores the latest research and practical applications of ${topic.toLowerCase()} in daily life.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Health and Wellness - AI Generated</p>
-        </div>
+        ${getImageHtml('section')}
         
         <h2>Scientific Research</h2>
         <p>Recent scientific studies have shown remarkable benefits of ${topic.toLowerCase()}. Researchers have documented significant improvements in various health markers, including enhanced immune function, better sleep quality, and improved mental wellbeing.</p>
@@ -83,9 +132,7 @@ const generateBlogContent = (topic, category, wordCount) => {
           <li>Sleep hygiene improvements</li>
         </ul>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Healthy Lifestyle - AI Generated</p>
-        </div>
+        ${getImageHtml('conclusion')}
         
         <h2>Lifestyle Integration</h2>
         <p>Successfully integrating ${topic.toLowerCase()} into your lifestyle requires consistency and patience. Start with small, manageable changes and gradually build upon them. Remember that sustainable health improvements take time and dedication.</p>
@@ -104,16 +151,12 @@ const generateBlogContent = (topic, category, wordCount) => {
       ],
       content: `
         <h1>${topic}</h1>
-        <div class="image-placeholder">
-          <p>🖼️ Hero Image: ${topic} - AI Generated</p>
-        </div>
+        ${getImageHtml('hero')}
         
         <h2>Introduction</h2>
         <p>Exploring ${topic.toLowerCase()} offers incredible opportunities for adventure, cultural enrichment, and personal growth. This comprehensive travel guide will help you make the most of your journey.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Travel Destination - AI Generated</p>
-        </div>
+        ${getImageHtml('section')}
         
         <h2>Planning Your Trip</h2>
         <p>Successful travel planning for ${topic.toLowerCase()} involves several key considerations. From choosing the right time to visit to selecting appropriate accommodations, proper planning ensures a memorable and enjoyable experience.</p>
@@ -121,9 +164,7 @@ const generateBlogContent = (topic, category, wordCount) => {
         <h2>Cultural Experiences</h2>
         <p>Immersing yourself in local culture is one of the most rewarding aspects of ${topic.toLowerCase()}. Engage with local communities, try traditional cuisine, and participate in cultural activities to gain authentic insights.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Cultural Activities - AI Generated</p>
-        </div>
+        ${getImageHtml('conclusion')}
         
         <h2>Practical Tips</h2>
         <p>Here are essential tips for ${topic.toLowerCase()}:</p>
@@ -149,16 +190,12 @@ const generateBlogContent = (topic, category, wordCount) => {
       ],
       content: `
         <h1>${topic}</h1>
-        <div class="image-placeholder">
-          <p>🖼️ Hero Image: ${topic} - AI Generated</p>
-        </div>
+        ${getImageHtml('hero')}
         
         <h2>Introduction</h2>
         <p>In today's competitive business environment, understanding ${topic.toLowerCase()} is essential for organizational success. This comprehensive analysis explores strategic approaches and best practices for implementation.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Business Strategy - AI Generated</p>
-        </div>
+        ${getImageHtml('section')}
         
         <h2>Market Analysis</h2>
         <p>The market landscape for ${topic.toLowerCase()} continues to evolve rapidly. Organizations that adapt quickly to changing conditions and leverage emerging opportunities are positioned for sustainable growth and competitive advantage.</p>
@@ -173,9 +210,7 @@ const generateBlogContent = (topic, category, wordCount) => {
           <li>Monitor progress and adjust strategies</li>
         </ul>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Team Collaboration - AI Generated</p>
-        </div>
+        ${getImageHtml('conclusion')}
         
         <h2>Performance Metrics</h2>
         <p>Measuring the success of ${topic.toLowerCase()} initiatives requires comprehensive tracking of key performance indicators. Regular assessment enables data-driven decision making and continuous improvement.</p>
@@ -194,16 +229,12 @@ const generateBlogContent = (topic, category, wordCount) => {
       ],
       content: `
         <h1>${topic}</h1>
-        <div class="image-placeholder">
-          <p>🖼️ Hero Image: ${topic} - AI Generated</p>
-        </div>
+        ${getImageHtml('hero')}
         
         <h2>Introduction</h2>
         <p>Embracing ${topic.toLowerCase()} can transform your daily life and overall well-being. This comprehensive guide explores practical strategies for integrating meaningful changes into your lifestyle.</p>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Lifestyle Enhancement - AI Generated</p>
-        </div>
+        ${getImageHtml('section')}
         
         <h2>Personal Development</h2>
         <p>Personal growth through ${topic.toLowerCase()} involves continuous learning and self-improvement. By adopting new perspectives and challenging yourself, you can unlock your full potential and achieve greater fulfillment.</p>
@@ -218,9 +249,7 @@ const generateBlogContent = (topic, category, wordCount) => {
           <li>Evening reflection and gratitude</li>
         </ul>
         
-        <div class="image-placeholder">
-          <p>🖼️ Section Image: Daily Routine - AI Generated</p>
-        </div>
+        ${getImageHtml('conclusion')}
         
         <h2>Social Impact</h2>
         <p>The positive effects of ${topic.toLowerCase()} extend beyond individual benefits. Your commitment to personal growth and positive lifestyle changes can inspire others and contribute to community well-being.</p>
@@ -235,26 +264,64 @@ const generateBlogContent = (topic, category, wordCount) => {
   return categoryContent.content;
 };
 
-export const generateBlogPost = async (formData) => {
-  await delay(2000 + Math.random() * 1000); // 2-3 seconds delay
+export const generateBlogPost = async (formData, onProgress) => {
+  await delay(1000); // Initial delay
   
-  const { topic, category, wordCount } = formData;
+  const { topic, category, wordCount, generateImages = false } = formData;
+  
+  let generatedImages = [];
+  
+  if (generateImages) {
+    try {
+      generatedImages = await generateImagesForBlog(topic, category, onProgress);
+    } catch (error) {
+      console.error('Error generating images:', error);
+      // Continue without images if generation fails
+    }
+  }
+  
+  if (onProgress) {
+    onProgress('Generating blog content...');
+  }
+  
+  await delay(1000); // Content generation delay
   
   const blogPost = {
     Id: Date.now(),
     title: topic,
     category: category,
     wordCount: wordCount,
-    content: generateBlogContent(topic, category, wordCount),
-    images: [
-      `Hero image for ${topic}`,
-      `Section image for ${category}`,
-      `Conclusion image for ${topic}`
-    ],
+    content: generateBlogContent(topic, category, wordCount, generatedImages),
+    images: generatedImages,
+    hasGeneratedImages: generateImages,
     createdAt: new Date().toISOString()
   };
   
   return blogPost;
+};
+
+export const regenerateImagesForBlog = async (blogData, onProgress) => {
+  if (!blogData.hasGeneratedImages) {
+    throw new Error('Blog was not created with image generation enabled');
+  }
+  
+  const { title: topic, category } = blogData;
+  
+  try {
+    const newImages = await generateImagesForBlog(topic, category, onProgress);
+    
+    const updatedBlogPost = {
+      ...blogData,
+      images: newImages,
+      content: generateBlogContent(topic, category, blogData.wordCount, newImages),
+      updatedAt: new Date().toISOString()
+    };
+    
+    return updatedBlogPost;
+  } catch (error) {
+    console.error('Error regenerating images:', error);
+    throw error;
+  }
 };
 
 export const getAllBlogs = async () => {

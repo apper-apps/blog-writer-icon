@@ -1,9 +1,11 @@
-import { motion } from 'framer-motion';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import { toast } from 'react-toastify';
-
-const BlogOutput = ({ blogData, onCopy, onDownload, onShare }) => {
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import React, { useState } from "react";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+const BlogOutput = ({ blogData, onCopy, onDownload, onShare, onRegenerateImages }) => {
+  const [regeneratingImages, setRegeneratingImages] = useState(false);
+  
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(blogData.content);
@@ -13,8 +15,22 @@ const BlogOutput = ({ blogData, onCopy, onDownload, onShare }) => {
       toast.error('Failed to copy content');
     }
   };
+  
+  const handleRegenerateImages = async () => {
+    if (!onRegenerateImages) return;
+    
+    setRegeneratingImages(true);
+    try {
+      await onRegenerateImages();
+      toast.success('Images regenerated successfully!');
+    } catch (error) {
+      toast.error('Failed to regenerate images');
+    } finally {
+      setRegeneratingImages(false);
+    }
+  };
 
-  const handleDownload = () => {
+const handleDownload = () => {
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -25,6 +41,7 @@ const BlogOutput = ({ blogData, onCopy, onDownload, onShare }) => {
           h1 { color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
           h2 { color: #374151; margin-top: 30px; }
           p { line-height: 1.6; color: #4b5563; }
+          .generated-image { max-width: 100%; height: auto; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
           .image-placeholder { background: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
         </style>
       </head>
@@ -66,7 +83,7 @@ const BlogOutput = ({ blogData, onCopy, onDownload, onShare }) => {
       transition={{ duration: 0.5 }}
       className="bg-white rounded-xl shadow-premium border border-gray-100 overflow-hidden"
     >
-      <div className="p-6 border-b border-gray-100">
+<div className="p-6 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-display font-semibold text-gray-900">
@@ -74,9 +91,23 @@ const BlogOutput = ({ blogData, onCopy, onDownload, onShare }) => {
             </h3>
             <p className="text-sm text-gray-600 mt-1">
               {blogData.category} • {blogData.wordCount} words
+              {blogData.images && blogData.images.length > 0 && (
+                <span> • {blogData.images.length} AI images</span>
+              )}
             </p>
           </div>
           <div className="flex items-center space-x-2">
+            {blogData.images && blogData.images.length > 0 && onRegenerateImages && (
+              <Button
+                variant="outline"
+                size="sm"
+                icon="RefreshCw"
+                onClick={handleRegenerateImages}
+                disabled={regeneratingImages}
+              >
+                {regeneratingImages ? 'Regenerating...' : 'Regenerate Images'}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
