@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 1,
+    "title": "The Future of Artificial Intelligence in Healthcare",
+    "category": "Tech",
+    "wordCount": 1200,
+    "content": "<h1>The Future of Artificial Intelligence in Healthcare</h1><div class=\"image-placeholder\"><p>🖼️ Hero Image: AI in Healthcare - AI Generated</p></div><h2>Introduction</h2><p>Artificial Intelligence is revolutionizing healthcare delivery and patient outcomes...</p>",
+    "images": ["AI Healthcare Hero", "Medical Technology", "Future Healthcare"],
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  {
+    "Id": 2,
+    "title": "10 Healthy Habits for Better Sleep",
+    "category": "Health",
+    "wordCount": 800,
+    "content": "<h1>10 Healthy Habits for Better Sleep</h1><div class=\"image-placeholder\"><p>🖼️ Hero Image: Sleep Health - AI Generated</p></div><h2>Introduction</h2><p>Quality sleep is fundamental to our health and well-being...</p>",
+    "images": ["Sleep Health Hero", "Bedroom Environment", "Sleep Routine"],
+    "createdAt": "2024-01-14T14:20:00Z"
+  },
+  {
+    "Id": 3,
+    "title": "Ultimate Guide to Solo Travel in Southeast Asia",
+    "category": "Travel",
+    "wordCount": 1500,
+    "content": "<h1>Ultimate Guide to Solo Travel in Southeast Asia</h1><div class=\"image-placeholder\"><p>🖼️ Hero Image: Southeast Asia Travel - AI Generated</p></div><h2>Introduction</h2><p>Southeast Asia offers incredible adventures for solo travelers...</p>",
+    "images": ["Southeast Asia Hero", "Solo Travel", "Cultural Experiences"],
+    "createdAt": "2024-01-13T09:15:00Z"
+  },
+  {
+    "Id": 4,
+    "title": "Building a Sustainable Remote Work Culture",
+    "category": "Business",
+    "wordCount": 1000,
+    "content": "<h1>Building a Sustainable Remote Work Culture</h1><div class=\"image-placeholder\"><p>🖼️ Hero Image: Remote Work Culture - AI Generated</p></div><h2>Introduction</h2><p>Remote work has become the new normal for many organizations...</p>",
+    "images": ["Remote Work Hero", "Team Collaboration", "Work Life Balance"],
+    "createdAt": "2024-01-12T16:45:00Z"
+  },
+  {
+    "Id": 5,
+    "title": "Minimalist Living: Finding Joy in Less",
+    "category": "Lifestyle",
+    "wordCount": 900,
+    "content": "<h1>Minimalist Living: Finding Joy in Less</h1><div class=\"image-placeholder\"><p>🖼️ Hero Image: Minimalist Living - AI Generated</p></div><h2>Introduction</h2><p>Minimalism is more than just having fewer possessions...</p>",
+    "images": ["Minimalist Home Hero", "Organized Space", "Simple Living"],
+    "createdAt": "2024-01-11T11:30:00Z"
+  }
+]

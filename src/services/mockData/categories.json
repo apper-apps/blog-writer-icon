@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "name": "Tech",
+    "icon": "Laptop"
+  },
+  {
+    "Id": 2,
+    "name": "Health",
+    "icon": "Heart"
+  },
+  {
+    "Id": 3,
+    "name": "Travel",
+    "icon": "MapPin"
+  },
+  {
+    "Id": 4,
+    "name": "Business",
+    "icon": "Briefcase"
+  },
+  {
+    "Id": 5,
+    "name": "Lifestyle",
+    "icon": "Coffee"
+  },
+  {
+    "Id": 6,
+    "name": "Food",
+    "icon": "ChefHat"
+  },
+  {
+    "Id": 7,
+    "name": "Fashion",
+    "icon": "Shirt"
+  },
+  {
+    "Id": 8,
+    "name": "Sports",
+    "icon": "Trophy"
+  }
+]
